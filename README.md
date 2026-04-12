@@ -1,80 +1,83 @@
-# Apout - PHP Ngrok Alternative
+# ⚡ Apout - Secure Local Tunneling
 
-Apout is a PHP-based CLI application that allows you to expose local servers behind NATs and firewalls to the public internet securely. 
+Apout is a modern, beautiful, and open-source alternative to ngrok. It allows you to expose your local web servers to the internet securely via a central relay server and a sleek CLI.
 
-## 1. Directory Structure
+## 🚀 Features
 
-```text
-apout/
-├── bin/
-│   └── apout                 # CLI entry point
-├── src/
-│   ├── Client/               # Local tunneling logic (Socket forwarding)
-│   ├── Auth/                 # Authentication & Token management
-│   ├── Server/               # Server-side proxy reference architecture 
-│   └── Config/               # JSON config management (~/.apout/config.json)
-├── composer.json             # Composer configuration
-└── README.md
-```
+- **Instant Tunnels:** Expose local ports to the web in seconds.
+- **Beautiful Dashboard:** Manage organizations, tunnels, and view request logs in real-time.
+- **WebSocket Driven:** High-performance request/response relaying using WebSockets.
+- **OAuth Ready:** Built-in support for GitHub and Google authentication.
+- **Self-Hostable:** Deploy your own Apout relay server and dashboard.
 
-## 2. Installation
+---
 
-Install Apout globally using Composer:
+## 🛠️ Self-Hosting Guide
 
+If you want to run your own Apout server, follow these steps:
+
+### 1. Prerequisites
+- **Node.js** (v18+)
+- **MySQL** (v8.0+)
+- **npm** or **yarn**
+
+### 2. Clone and Setup
 ```bash
-composer global require username/apout
+git clone https://github.com/apreezofficial/apout.git
+cd apout/server
+npm install
 ```
-*(Make sure your `~/.composer/vendor/bin` directory is configured in your system `$PATH`)*
 
-## 3. Step-by-Step Setup Instructions
-
-1. **Clone the repository** (if setting up from source):
-   ```bash
-   git clone https://github.com/username/apout.git
-   cd apout
-   composer install
-   ```
-
-2. **Make the CLI executable** (Linux/Mac):
-   ```bash
-   chmod +x bin/apout
-   ```
-
-3. **Authenticate**: Log in with your Apout Token (You would usually get this from apout-server.com dashboard):
-   ```bash
-   apout login your_auth_token_here
-   ```
-   *Your token will be safely stored in `~/.apout/config.json`.*
-
-## 4. Usage & Example Workflows
-
-Once authenticated, start your local server. For example:
+### 3. Environment Configuration
+Copy the example environment file and fill in your details:
 ```bash
-php -S localhost:3000
+cp .env.example .env
 ```
+Edit `.env` and configure:
+- `DB_HOST`, `DB_USER`, etc. (Database credentials)
+- `APOUT_SERVER_URL` (The domain or IP where your server is hosted)
+- `GITHUB_CLIENT_ID` & `GOOGLE_CLIENT_ID` (For OAuth login)
 
-On a separate terminal, deploy the tunnel using Apout:
-
-**Basic Tunnel (Random Subdomain):**
+### 4. Initialize and Run
 ```bash
-apout start --port=3000
+npm start
 ```
+The server will automatically initialize the database schema on the first run.
 
-**Custom Subdomain:**
+---
+
+## 💻 CLI Usage
+
+The Apout CLI is used to create tunnels from your local machine.
+
+### 1. Install CLI
 ```bash
-apout start --port=3000 --subdomain=myapp
+cd apout
+npm install -g .
 ```
 
-**Custom Protocol (HTTP vs HTTPS):**
+### 2. Login
+Get your API token from the dashboard (Settings > API Tokens) and run:
 ```bash
-apout start --port=3000 --subdomain=myapp --protocol=http
+apout login <your_token>
 ```
 
-## 5. How It Works
-- The Apout CLI is built on **Symfony Console** for elegant cross-platform command-line operations.
-- The `ConfigManager` safely encrypts/stores state data in your `~/.apout` directory.
-- `TunnelClient` simulates a bidirectional WebSocket stream using TCP pipelines.
-- Traffic arrives at `apout-server.com`, is passed through the proxy pipeline back to your CLI socket, which in turn performs a local cURL / stream proxy to `localhost:3000` and flushes the response back upstream.
+### 3. Start a Tunnel
+To expose a local server running on port 3000:
+```bash
+apout start --port 3000
+```
+Optional flags:
+- `--subdomain <name>`: Request a specific custom subdomain.
+- `--protocol <http|https>`: Force a specific protocol.
 
-## 6. Server-Side Requirements
-Due to PHP's request-response lifecycle under Nginx/Apache, standard PHP cannot proxy persistent TCP sockets natively without long-polling limitations. The `TunnelServer.php` script contains a demonstration of how a persistent event-driven proxy server can be set up in pure PHP using **Workerman** or **Swoole** for the centralized `apout-server.com` backend!
+---
+
+## 🐞 Recent Bug Fixes (v1.0.1)
+- **Security:** Switched from plaintext password storage to SHA-256 hashing.
+- **Reliability:** Fixed crashes in the invitation system due to missing database columns.
+- **Consistency:** Tunnel URLs now dynamically resolve based on the `APOUT_SERVER_URL` environment variable.
+- **Stability:** Added real-time token validation for the CLI `login` command.
+
+## 📄 License
+MIT License. Created by **Apcodesphere**.

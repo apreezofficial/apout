@@ -15,6 +15,7 @@ import {
     getUserDomains, createDomain, deleteDomain,
     getExtraTokens, generateToken, deleteToken,
     getRequestLogs, getOrgMembers, inviteMember,
+    getUserInvites, respondToInvite, transferOrgOwnership,
     updateUsername, updatePassword, deleteAccount,
     pool
 } from './db.js';
@@ -47,9 +48,9 @@ app.use((req, res, next) => {
 // ── Proxy Middleware ─────────────────────────────────────────────────────────
 app.use(async (req, res, next) => {
     const host = req.headers.host;
-    // Assuming the main dashboard is app.apout.dev or localhost:8080
-    // We detect subdomains like myapp.apout.dev
-    const mainHost = 'localhost:8080'; // Change to your actual domain in production
+    // Read the configured server host from env — strips protocol if present
+    const mainHost = (process.env.APOUT_SERVER_URL || 'localhost:8080')
+        .replace(/^https?:\/\//, '');
     
     if (host && host !== mainHost && !host.startsWith('localhost')) {
         const subdomain = host.split('.')[0];
@@ -390,6 +391,21 @@ orgRouter.post('/settings/delete-account', async (req, res) => {
 
 // Mount org router
 app.use('/dashboard/:slug', orgRouter);
+
+// ── API ───────────────────────────────────────────────────────────────────────
+// Token validation endpoint used by the CLI `apout login <token>`
+app.get('/api/me', async (req, res) => {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
+    const token = auth.slice(7);
+    try {
+        const [rows] = await pool.query('SELECT id, username, token FROM users WHERE token = ?', [token]);
+        if (!rows.length) return res.status(401).json({ error: 'Invalid token' });
+        res.json({ ok: true, username: rows[0].username });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 // ── WebSocket Logic ──────────────────────────────────────────────────────────
 wss.on('connection', async (ws, req) => {

@@ -3,6 +3,7 @@ import path from 'path';
 import os from 'os';
 import ora from 'ora';
 import chalk from 'chalk';
+import fetch from 'node-fetch';
 
 const getConfigPath = () => {
     const homeDir = os.homedir();
@@ -38,13 +39,26 @@ export const getToken = () => {
 
 export const loginCommand = async (token) => {
     const spinner = ora({
-        text: 'Verifying token with Apout servers...',
+        text: 'Verifying token with Apout server...',
         color: 'cyan'
     }).start();
-    
-    // Simulating remote ping/auth process
-    await new Promise(resolve => setTimeout(resolve, 1300));
-    
-    saveToken(token);
-    spinner.succeed(chalk.greenBright(' Successfully authenticated! Token bound to global config.'));
+
+    const serverUrl = process.env.APOUT_SERVER || 'http://localhost:8080';
+
+    try {
+        const res = await fetch(`${serverUrl}/api/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+            spinner.fail(chalk.redBright(' Invalid token. Please check your token on the Apout dashboard.'));
+            process.exit(1);
+        }
+
+        saveToken(token);
+        spinner.succeed(chalk.greenBright(' Successfully authenticated! Token saved to global config.'));
+    } catch (err) {
+        spinner.fail(chalk.redBright(` Could not reach Apout server at ${serverUrl}. Is it running?`));
+        process.exit(1);
+    }
 };

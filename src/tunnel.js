@@ -30,11 +30,20 @@ export const startTunnelCommand = async (options) => {
     });
 
     ws.on('message', async (data) => {
-        const msg = JSON.parse(data);
+        let msg;
+        try {
+            msg = JSON.parse(data);
+        } catch (e) {
+            console.error(chalk.red('  [ERROR] Received malformed message from server.'));
+            return;
+        }
 
         if (msg.type === 'authenticated') {
             spinner.succeed(chalk.greenBright('Tunnel online!'));
-            console.log(chalk.cyan(`\n  🌐 Public: `) + chalk.white.underline(`http://${msg.subdomain}.localhost:8080`));
+            // Derive public URL properly from configured server
+            const domain = serverBaseUrl.replace(/^https?:\/\//, '').replace(/^wss?:\/\//, '');
+            const protocol = serverBaseUrl.startsWith('wss://') || serverBaseUrl.startsWith('https://') ? 'https' : 'http';
+            console.log(chalk.cyan(`\n  🌐 Public: `) + chalk.white.underline(`${protocol}://${msg.subdomain}.${domain}`));
             console.log(chalk.cyan(`  💻 Local:  `) + chalk.white(localBaseUrl));
         }
 

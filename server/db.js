@@ -27,7 +27,8 @@ export async function initDB() {
 
         await pool.query(`CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255), token VARCHAR(255) UNIQUE NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
+            email VARCHAR(255), password VARCHAR(255), token VARCHAR(255) UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
 
         await pool.query(`CREATE TABLE IF NOT EXISTS oauth_accounts (
             id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, provider VARCHAR(50) NOT NULL,
@@ -88,19 +89,26 @@ async function createPersonalOrg(userId, username) {
     await pool.query('INSERT INTO organization_members (org_id,user_id,role) VALUES(?,?,?)',[r.insertId,userId,'owner']);
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function hashPassword(raw) {
+    return crypto.createHash('sha256').update(raw + (process.env.PASSWORD_SALT || 'apout_salt_2025')).digest('hex');
+}
+
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export async function authenticate(username, password) {
     if(!pool) return null;
-    const [r] = await pool.query('SELECT * FROM users WHERE username=? AND password=?',[username,password]);
-    return r[0]??null;
+    const hashed = hashPassword(password);
+    const [r] = await pool.query('SELECT * FROM users WHERE username=? AND password=?',[username, hashed]);
+    return r[0] ?? null;
 }
 export async function createUser(username, password) {
     if(!pool) return null;
     const [e] = await pool.query('SELECT id FROM users WHERE username=?',[username]);
     if(e.length>0) return null;
     const token='ap_'+crypto.randomBytes(16).toString('hex');
+    const hashed = hashPassword(password);
     try {
-        const [r] = await pool.query('INSERT INTO users (username,password,token) VALUES(?,?,?)',[username,password,token]);
+        const [r] = await pool.query('INSERT INTO users (username,password,token) VALUES(?,?,?)',[username, hashed, token]);
         await createPersonalOrg(r.insertId, username);
         const [u] = await pool.query('SELECT * FROM users WHERE id=?',[r.insertId]);
         return u[0];
@@ -215,7 +223,8 @@ export async function getOrgMembers(orgId){
 }
 export async function inviteMember(orgId, username, role, invitedById) {
     if(!pool) return { ok: false, msg: 'Database error' };
-    const [u] = await pool.query('SELECT id FROM users WHERE username = ? OR email = ?', [username, username]);
+    // Search by username or email (email may be null for password-registered users)
+    const [u] = await pool.query('SELECT id FROM users WHERE username = ? OR (email IS NOT NULL AND email = ?)', [username, username]);
     if (!u.length) return { ok: false, msg: 'User not found' };
     const targetUserId = u[0].id;
 
@@ -265,14 +274,17 @@ export async function updateUsername(userId,username){
 }
 export async function updatePassword(userId,oldPass,newPass){
     if(!pool) return false;
-    const [r]=await pool.query('SELECT id FROM users WHERE id=? AND password=?',[userId,oldPass]);
+    const hashedOld = hashPassword(oldPass);
+    const [r]=await pool.query('SELECT id FROM users WHERE id=? AND password=?',[userId, hashedOld]);
     if(!r.length) return false;
-    await pool.query('UPDATE users SET password=? WHERE id=?',[newPass,userId]);
+    const hashedNew = hashPassword(newPass);
+    await pool.query('UPDATE users SET password=? WHERE id=?',[hashedNew, userId]);
     return true;
 }
 export async function deleteAccount(userId, password){
     if(!pool) return { ok: false, msg: 'Database error' };
-    const [r] = await pool.query('SELECT id FROM users WHERE id = ? AND password = ?', [userId, password]);
+    const hashed = hashPassword(password);
+    const [r] = await pool.query('SELECT id FROM users WHERE id = ? AND password = ?', [userId, hashed]);
     if (!r.length) return { ok: false, msg: 'Invalid password' };
     
     await pool.query('DELETE FROM users WHERE id = ?', [userId]);
