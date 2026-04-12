@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %> - OutRay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+        .sidebar { background-color: #161b22; border-right: 1px solid #30363d; width: 240px; flex-shrink: 0; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 6px; font-size: 13.5px; color: #8b949e; transition: all 0.15s; text-decoration: none; }
+        .nav-item:hover { color: #c9d1d9; background-color: #21262d; }
+        .nav-item.active { color: #fff; background-color: #1f6feb; font-weight: 600; }
+        .nav-section { font-size: 10.5px; font-weight: 700; color: #484f58; text-transform: uppercase; letter-spacing: 0.08em; padding: 14px 12px 5px; }
+        .card { background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; }
+        .card-header { padding: 14px 20px; border-bottom: 1px solid #30363d; display: flex; align-items: center; justify-content: space-between; }
+        .card-header h3 { font-size: 14px; font-weight: 600; color: #e6edf3; }
+        .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .badge-green { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+        .badge-blue  { background: rgba(31,111,235,0.15); color: #58a6ff; border: 1px solid rgba(31,111,235,0.3); }
+        .badge-gray  { background: #21262d; color: #8b949e; border: 1px solid #30363d; }
+        .btn-primary { background: #238636; color: #fff; border: 1px solid rgba(240,246,252,0.1); padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+        .btn-primary:hover { background: #2ea043; }
+        .btn-danger  { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .btn-danger:hover { background: rgba(248,81,73,0.3); }
+        .input { background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 6px; padding: 8px 12px; font-size: 13px; width: 100%; outline: none; transition: border-color 0.2s; }
+        .input:focus { border-color: #1f6feb; }
+        .table-row { display: grid; padding: 12px 20px; border-bottom: 1px solid #21262d; align-items: center; font-size: 13px; }
+        .table-row:last-child { border-bottom: none; }
+        .empty-state { padding: 48px 20px; text-align: center; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+<!-- ── Sidebar ──────────────────────────────────────────────────────────────── -->
+<aside class="sidebar flex flex-col h-full overflow-y-auto">
+
+    <!-- Org switcher -->
+    <div class="p-3 border-b border-[#30363d]">
+        <% if(activeOrg) { %>
+        <!-- Dropdown trigger -->
+        <div class="relative" x-data="{open:false}">
+            <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full flex items-center justify-between p-2 rounded-md hover:bg-[#21262d] cursor-pointer group">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-md bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs ring-1 ring-white/10">
+                        <%= activeOrg.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-[13px] font-semibold text-[#e6edf3] group-hover:text-white leading-none truncate max-w-[120px]"><%= activeOrg.name %></div>
+                        <div class="text-[10px] text-[#8b949e] mt-0.5">Free Plan</div>
+                    </div>
+                </div>
+                <svg class="w-3.5 h-3.5 text-[#8b949e] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/></svg>
+            </button>
+            <!-- Org list dropdown -->
+            <div class="hidden absolute left-0 right-0 mt-1 bg-[#21262d] border border-[#30363d] rounded-md shadow-xl z-50 overflow-hidden">
+                <% orgs.forEach(o => { %>
+                <a href="/dashboard/<%= o.slug %>" class="flex items-center gap-2 px-3 py-2 text-[12px] hover:bg-[#30363d] transition-colors <%= o.id===activeOrg.id?'text-[#58a6ff] font-semibold':'text-[#c9d1d9]' %>">
+                    <div class="w-5 h-5 rounded bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold text-[9px]"><%= o.name.charAt(0).toUpperCase() %></div>
+                    <span class="truncate"><%= o.name %></span>
+                    <% if(o.id===activeOrg.id){ %><span class="ml-auto text-[#3fb950]">✓</span><% } %>
+                </a>
+                <% }) %>
+                <div class="border-t border-[#30363d]">
+                    <a href="/organization/create" class="flex items-center gap-2 px-3 py-2 text-[12px] text-[#58a6ff] hover:bg-[#30363d] transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        New Organization
+                    </a>
+                </div>
+            </div>
+        </div>
+        <% } else { %>
+        <div class="text-[11px] text-[#8b949e] px-2 py-1">No organization</div>
+        <a href="/organization/create" class="mt-2 flex items-center gap-1.5 text-[11px] text-[#58a6ff] hover:text-[#79c0ff] px-2 transition-colors font-medium">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Create Organization
+        </a>
+        <% } %>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 p-2 space-y-0.5">
+        <% const base = activeOrg ? '/dashboard/' + activeOrg.slug : '/dashboard'; %>
+        <a href="<%= base %>" class="nav-item <%= activeNav==='dashboard' ? 'active' : '' %>">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Overview
+        </a>
+
+        <div class="nav-section">Network</div>
+
+        <a href="<%= base %>/tunnels" class="nav-item <%= activeNav==='tunnels' ? 'active' : '' %> justify-between">
+            <span class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Active Tunnels
+            </span>
+            <span class="badge badge-gray"><%= tunnelCount || 0 %></span>
+        </a>
+        <a href="<%= base %>/requests" class="nav-item <%= activeNav==='requests' ? 'active' : '' %>">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            Requests
+        </a>
+        <a href="<%= base %>/subdomains" class="nav-item <%= activeNav==='subdomains' ? 'active' : '' %>">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+            Subdomains
+        </a>
+        <a href="<%= base %>/domains" class="nav-item <%= activeNav==='domains' ? 'active' : '' %>">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Domains
+        </a>
+
+        <div class="nav-section">Organization</div>
+
+        <a href="<%= base %>/billing" class="nav-item <%= activeNav==='billing' ? 'active' : '' %>">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            Billing
+        </a>
+        <a href="<%= base %>/members" class="nav-item <%= activeNav==='members' ? 'active' : '' %>">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            Members
+        </a>
+        <a href="<%= base %>/api-tokens" class="nav-item <%= activeNav==='api-tokens' ? 'active' : '' %>">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            API Tokens
+        </a>
+        <a href="<%= base %>/settings" class="nav-item <%= activeNav==='settings' ? 'active' : '' %>">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+        </a>
+    </nav>
+
+    <!-- Footer -->
+    <div class="p-3 border-t border-[#30363d] space-y-2">
+        <div class="bg-[#0d1117] p-2.5 rounded-md border border-[#30363d]">
+            <div class="flex justify-between text-[11px] mb-1.5">
+                <span class="font-semibold text-[#e6edf3]">Free Plan</span>
+                <span class="text-[#8b949e]"><%= tunnelCount||0 %>/2 Tunnels</span>
+            </div>
+            <div class="w-full bg-[#30363d] rounded-full h-1 overflow-hidden">
+                <div class="bg-[#238636] h-1 rounded-full" style="width:<%= Math.min(((tunnelCount||0)/2)*100,100) %>%"></div>
+            </div>
+            <a href="https://preciousadedokun.com.ng" target="_blank" class="block mt-1.5 text-[10px] text-[#3fb950] hover:underline text-right">Free by Apcodesphere ✓</a>
+        </div>
+        <a href="/logout" class="nav-item text-[#f85149] hover:text-[#ff7b72] hover:bg-[#f8514915] text-[12px]">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Sign out — <%= user.username %>
+        </a>
+    </div>
+</aside>
+
+<!-- ── Main ─────────────────────────────────────────────────────────────────── -->
+<main class="flex-1 overflow-y-auto flex flex-col">

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/SplitText.min.js"></script>
+<style>
+/* Specific Hero Animations */
+.hero-title .line{display:block;overflow:hidden;}
+.hero-title .word{display:inline-block;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+</style>
+</head>
+<body>
+
+<canvas id="net-canvas"></canvas>
+<%- include('partials/nav') %>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge" id="hero-badge">Live tunneling platform</div>
+        <h1 class="hero-title" id="hero-title">
+          <span class="line"><span class="word">Your localhost,</span></span>
+          <span class="line"><span class="word gradient-stroke glitch" data-text="online now.">online now.</span></span>
+        </h1>
+        <p class="hero-sub" id="hero-sub">
+          OutRay exposes your local server to the internet in milliseconds.
+          One command. Zero configuration. Share with anyone, anywhere.
+        </p>
+        <div class="hero-actions" id="hero-actions">
+          <a href="/register" class="btn-primary btn-large">
+            Start tunneling free
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5-5 5M6 12h12"/></svg>
+          </a>
+          <a href="#how" class="btn-ghost btn-large">See how it works</a>
+        </div>
+        <div class="hero-stats" id="hero-stats">
+          <div class="stat-item">
+            <div class="stat-num" data-target="2400">0</div>
+            <div class="stat-label">Active tunnels</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" data-target="120">0</div>
+            <div class="stat-label">ms to connect</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" data-target="99.9">0</div>
+            <div class="stat-label">% uptime</div>
+          </div>
+        </div>
+      </div>
+      <div class="terminal-wrap" id="terminal-wrap">
+        <div class="terminal-glow"></div>
+        <!-- Orbit rings -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:500px;height:500px;pointer-events:none;z-index:-1;">
+          <div class="orbit-ring" style="width:340px;height:340px;top:50%;left:50%;transform:translate(-50%,-50%) rotate(0deg);border-color:rgba(79,142,247,0.12);animation-duration:20s;">
+            <div class="orbit-dot" style="background:#4f8ef7;box-shadow:0 0 8px #4f8ef7;top:0;left:50%;"></div>
+          </div>
+          <div class="orbit-ring" style="width:440px;height:440px;top:50%;left:50%;transform:translate(-50%,-50%) rotate(60deg);border-color:rgba(124,58,237,0.1);animation-duration:30s;animation-direction:reverse;">
+            <div class="orbit-dot" style="background:#7c3aed;box-shadow:0 0 8px #7c3aed;top:0;left:50%;"></div>
+          </div>
+        </div>
+        <div class="terminal" id="terminal">
+          <div class="terminal-bar">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+            <span class="terminal-title">OutRay — bash</span>
+          </div>
+          <div class="terminal-body" id="term-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features">
+  <div class="container">
+    <div class="anim-fade">
+      <div class="section-eyebrow">Everything you need</div>
+      <h2 class="section-title">Built for developers<br>who ship fast.</h2>
+      <p class="section-sub">No complex setup. No firewall rules. OutRay handles the hard parts so you can focus on building.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card anim-scale">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant tunnels</h3>
+        <p>One command and your local server is live on a public URL. No config files, no port forwarding, no VPN setup required.</p>
+      </div>
+      <div class="feature-card anim-scale">
+        <div class="feature-icon">🔒</div>
+        <h3>HTTPS by default</h3>
+        <p>Every tunnel gets a valid TLS certificate automatically. Share secure links with clients or test webhooks confidently.</p>
+      </div>
+      <div class="feature-card anim-scale">
+        <div class="feature-icon">🌐</div>
+        <h3>Custom subdomains</h3>
+        <p>Reserve your own subdomain so your tunnel URL stays consistent across sessions. No more broken webhook callbacks.</p>
+      </div>
+      <div class="feature-card anim-scale">
+        <div class="feature-icon">📊</div>
+        <h3>Request inspector</h3>
+        <p>See every HTTP request flowing through your tunnel in real-time — method, path, headers, body, and response status.</p>
+      </div>
+      <div class="feature-card anim-scale">
+        <div class="feature-icon">🏢</div>
+        <h3>Organizations</h3>
+        <p>Invite teammates, share tunnels across projects, and manage access permissions with team-based organizations.</p>
+      </div>
+      <div class="feature-card anim-scale">
+        <div class="feature-icon">🎁</div>
+        <h3>Completely free</h3>
+        <p>Every feature — custom subdomains, team orgs, API tokens, custom domains — all free. Forever. Courtesy of <a href="https://preciousadedokun.com.ng" target="_blank" style="color:var(--accent);text-decoration:none;">Apcodesphere</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how" style="background:var(--bg2);">
+  <div class="container">
+    <div class="anim-left">
+      <div class="section-eyebrow">Dead simple</div>
+      <h2 class="section-title">Three commands<br>to go live.</h2>
+    </div>
+    <div class="how-grid">
+      <div class="steps">
+        <div class="step anim-left">
+          <div class="step-num">1</div>
+          <div>
+            <h4>Install the CLI</h4>
+            <p>Install globally with npm. Works on Mac, Linux, and Windows Subsystem for Linux.</p>
+            <br><code>npm install -g OutRay-cli</code>
+          </div>
+        </div>
+        <div class="step anim-left">
+          <div class="step-num">2</div>
+          <div>
+            <h4>Authenticate once</h4>
+            <p>Link your account token from the dashboard. You only do this once per machine.</p>
+            <br><code>OutRay login &lt;your-token&gt;</code>
+          </div>
+        </div>
+        <div class="step anim-left">
+          <div class="step-num">3</div>
+          <div>
+            <h4>Expose any port</h4>
+            <p>Point OutRay at any local port. Your public HTTPS URL is ready in under a second.</p>
+            <br><code>OutRay start --port 3000</code>
+          </div>
+        </div>
+      </div>
+      <div class="demo-panel anim-right">
+        <div class="demo-tabs">
+          <div class="demo-tab active">tunnel.js</div>
+          <div class="demo-tab">config.json</div>
+        </div>
+        <div class="demo-content">
+          <div class="demo-line"><span class="demo-line-num">1</span><span class="cm">// OutRay tunnel established ✓</span></div>
+          <div class="demo-line"><span class="demo-line-num">2</span><span>&nbsp;</span></div>
+          <div class="demo-line"><span class="demo-line-num">3</span><span class="kw">const</span> <span style="color:#9cdcfe">OutRay</span> = <span class="fn">require</span>(<span class="str">'@OutRay/sdk'</span>);</span></div>
+          <div class="demo-line"><span class="demo-line-num">4</span><span>&nbsp;</span></div>
+          <div class="demo-line"><span class="demo-line-num">5</span><span class="kw">const</span> <span style="color:#9cdcfe">tunnel</span> = <span class="kw">await</span> OutRay.<span class="fn">createTunnel</span>({</span></div>
+          <div class="demo-line"><span class="demo-line-num">6</span><span>&nbsp;&nbsp;port: <span class="num">3000</span>,</span></div>
+          <div class="demo-line"><span class="demo-line-num">7</span><span>&nbsp;&nbsp;subdomain: <span class="str">'my-app'</span>,</span></div>
+          <div class="demo-line"><span class="demo-line-num">8</span><span>&nbsp;&nbsp;protocol: <span class="str">'https'</span></span></div>
+          <div class="demo-line"><span class="demo-line-num">9</span><span>});</span></div>
+          <div class="demo-line"><span class="demo-line-num">10</span><span>&nbsp;</span></div>
+          <div class="demo-line"><span class="demo-line-num">11</span><span>console.<span class="fn">log</span>(tunnel.url);</span></div>
+          <div class="demo-line"><span class="demo-line-num">12</span><span class="cm">// → https://my-app.OutRay-server.com</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Speed Section -->
+<section id="speed" class="speed-section">
+  <div class="container">
+    <div class="anim-fade">
+      <div class="section-eyebrow">Performance</div>
+      <h2 class="section-title">Engineered for speed.</h2>
+      <p class="section-sub">Low-latency WebSocket relay, edge routing, and keep-alive connections mean your tunnels are blazing fast.</p>
+    </div>
+    <div class="speed-cards">
+      <div class="speed-card anim-scale">
+        <div class="speed-big counter" data-target="120" data-suffix="ms">0</div>
+        <div class="speed-label">Average tunnel connect time</div>
+      </div>
+      <div class="speed-card anim-scale">
+        <div class="speed-big counter" data-target="99.9" data-suffix="%">0</div>
+        <div class="speed-label">Platform uptime SLA</div>
+      </div>
+      <div class="speed-card anim-scale">
+        <div class="speed-big counter" data-target="10" data-suffix="GB/s">0</div>
+        <div class="speed-label">Max throughput per tunnel</div>
+      </div>
+      <div class="speed-card anim-scale">
+        <div class="speed-big counter" data-target="50" data-suffix="ms">0</div>
+        <div class="speed-label">P99 latency overhead</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card anim-scale">
+      <h2 class="cta-title">Ready to go live?</h2>
+      <p class="cta-sub">Join thousands of developers exposing their localhost in seconds. It's free.</p>
+      <div class="install-box">
+        <span class="install-cmd">$ npm install -g OutRay-cli</span>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('npm install -g OutRay-cli');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)">Copy</button>
+      </div>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="/register" class="btn-primary btn-large">Create free account</a>
+        <a href="/login" class="btn-ghost btn-large">Sign in</a>
+      </div>
+      <p style="margin-top:24px;font-size:13px;color:var(--muted);">
+        Made free forever by <a href="https://preciousadedokun.com.ng" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none;">Apcodesphere ↗</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
+
+<script>
+// ── GSAP Setup ────────────────────────────────────────────────────────────────
+gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+<%- include('partials/network_js') %>
+
+// ── Navbar scroll ─────────────────────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+});
+
+// ── Hero GSAP Intro ───────────────────────────────────────────────────────────
+const heroTL = gsap.timeline({defaults:{ease:'power3.out'}});
+
+heroTL
+  .from('#hero-badge', {opacity:0, y:-20, duration:.6})
+  .from('#hero-title .word', {opacity:0, y:60, stagger:.15, duration:.8}, '-=.2')
+  .from('#hero-sub', {opacity:0, y:30, duration:.7}, '-=.4')
+  .from('#hero-actions *', {opacity:0, y:20, stagger:.1, duration:.5}, '-=.3')
+  .from('#hero-stats .stat-item', {opacity:0, y:20, stagger:.1, duration:.5}, '-=.2')
+  .from('#terminal-wrap', {opacity:0, x:60, duration:1}, '-=.8');
+
+// ── Terminal Typewriter ───────────────────────────────────────────────────────
+const lines = [
+  {type:'prompt', text:'$ OutRay start --port 3000'},
+  {type:'out',    text:'  Connecting to relay server...'},
+  {type:'success',text:'  ✓ Authenticated as apcodesphere'},
+  {type:'out',    text:'  ✓ Tunnel established'},
+  {type:'url',    text:'  ─────────────────────────────'},
+  {type:'url',    text:'  🌐 https://apcodesphere.OutRay-server.com'},
+  {type:'out',    text:'  ─────────────────────────────'},
+  {type:'out',    text:'  Forwarding → http://localhost:3000'},
+  {type:'warn',   text:'  Watching for requests...'},
+];
+
+let lineIdx=0;
+function typeLine(){
+  if(lineIdx>=lines.length){
+    setTimeout(()=>{
+      document.getElementById('term-body').innerHTML='';
+      lineIdx=0;
+      typeLine();
+    },3500);
+    return;
+  }
+  const l=lines[lineIdx++];
+  const el=document.createElement('div');
+  el.className='t-out';
+  if(l.type==='prompt') el.innerHTML='<span class="t-prompt">❯ </span><span class="t-cmd"></span><span class="t-cursor"></span>';
+  else if(l.type==='url') el.innerHTML=`<span class="t-url"></span>`;
+  else if(l.type==='success') el.innerHTML=`<span class="t-success"></span>`;
+  else if(l.type==='warn') el.innerHTML=`<span class="t-warn"></span>`;
+  else el.innerHTML=`<span class="t-out"></span>`;
+  document.getElementById('term-body').appendChild(el);
+  const target=el.querySelector('span:last-child');
+  // Remove cursor from previous line
+  document.querySelectorAll('.t-cursor').forEach(c=>c.remove());
+  gsap.to(target,{duration:l.text.length*0.03, text:{value:l.text,delimiter:''}, ease:'none',
+    onComplete:()=>{setTimeout(typeLine,l.type==='out'?80:200);}
+  });
+}
+setTimeout(typeLine,1800);
+
+// ── Counter Animation ─────────────────────────────────────────────────────────
+function animateCounters(els){
+  els.forEach(el=>{
+    const target=parseFloat(el.dataset.target);
+    const suffix=el.dataset.suffix||'';
+    const isFloat=target%1!==0;
+    gsap.to({val:0},{val:target,duration:2,ease:'power2.out',
+      onUpdate:function(){
+        el.textContent=(isFloat?this.targets()[0].val.toFixed(1):Math.round(this.targets()[0].val)) + suffix;
+      }
+    });
+  });
+}
+
+// Hero stat counters
+ScrollTrigger.create({
+  trigger:'#hero-stats',
+  start:'top 85%',
+  once:true,
+  onEnter:()=>animateCounters(document.querySelectorAll('#hero-stats .stat-num'))
+});
+
+// Speed counters
+ScrollTrigger.create({
+  trigger:'#speed',
+  start:'top 75%',
+  once:true,
+  onEnter:()=>animateCounters(document.querySelectorAll('.speed-big.counter'))
+});
+
+// ── Scroll animations ─────────────────────────────────────────────────────────
+gsap.utils.toArray('.anim-fade').forEach(el=>{
+  gsap.to(el,{
+    opacity:1,y:0,duration:.8,ease:'power2.out',
+    scrollTrigger:{trigger:el,start:'top 85%',toggleActions:'play none none none'}
+  });
+});
+gsap.utils.toArray('.anim-left').forEach((el,i)=>{
+  gsap.to(el,{
+    opacity:1,x:0,duration:.7,ease:'power2.out',delay:i*0.05,
+    scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none none'}
+  });
+});
+gsap.utils.toArray('.anim-right').forEach(el=>{
+  gsap.to(el,{
+    opacity:1,x:0,duration:.9,ease:'power2.out',
+    scrollTrigger:{trigger:el,start:'top 80%',toggleActions:'play none none none'}
+  });
+});
+gsap.utils.toArray('.anim-scale').forEach((el,i)=>{
+  gsap.to(el,{
+    opacity:1,scale:1,duration:.7,ease:'back.out(1.4)',delay:(i%3)*0.1,
+    scrollTrigger:{trigger:el,start:'top 87%',toggleActions:'play none none none'}
+  });
+});
+
+// ── Feature card hover glow ───────────────────────────────────────────────────
+document.querySelectorAll('.feature-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    const x=e.clientX-rect.left, y=e.clientY-rect.top;
+    card.style.setProperty('--mx',x+'px');
+    card.style.setProperty('--my',y+'px');
+    card.style.background=`radial-gradient(circle at ${x}px ${y}px,rgba(79,142,247,0.06),#0c1526 60%)`;
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.background='';
+  });
+});
+
+// ── Scroll parallax for hero badge ───────────────────────────────────────────
+gsap.to('.hero-badge',{
+  y:-30, scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:1}
+});
+gsap.to('.terminal-wrap',{
+  y:40, scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:1}
+});
+
+// ── Demo tabs ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('.demo-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.demo-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// ── Floating spark particles on click ─────────────────────────────────────────
+document.addEventListener('click',e=>{
+  for(let i=0;i<8;i++){
+    const p=document.createElement('div');
+    p.style.cssText=`position:fixed;width:${Math.random()*4+2}px;height:${Math.random()*4+2}px;border-radius:50%;background:${['#4f8ef7','#06d6a0','#ec4899','#7c3aed'][Math.floor(Math.random()*4)]};left:${e.clientX}px;top:${e.clientY}px;pointer-events:none;z-index:9999;`;
+    document.body.appendChild(p);
+    gsap.to(p,{
+      x:(Math.random()-.5)*120, y:(Math.random()-.5)*120,
+      opacity:0, scale:0, duration:Math.random()*0.8+0.4,
+      ease:'power2.out',
+      onComplete:()=>p.remove()
+    });
+  }
+});
+</script>
+</body>
+</html>

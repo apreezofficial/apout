@@ -1,0 +1,168 @@
+<%- include('partials/sidebar', {pageTitle:'Custom Domains', activeNav:'domains', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-5xl w-full">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Custom Domains</h1>
+            <p class="text-[#8b949e] text-sm mt-1">Serve your local services over your own production domains.</p>
+        </div>
+        <button onclick="document.getElementById('domain-modal').classList.remove('hidden')" class="btn-primary" style="padding: 10px 20px;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Connect Domain
+        </button>
+    </div>
+
+    <!-- Stats summary -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card p-5 bg-[#161b22]/50">
+            <div class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider mb-2">Total Connected</div>
+            <div class="text-2xl font-bold text-white"><%= domains.length %></div>
+        </div>
+        <div class="card p-5 bg-[#161b22]/50">
+            <div class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider mb-2">Verified</div>
+            <div class="text-2xl font-bold text-[#3fb950]"><%= domains.filter(d => d.verified).length %></div>
+        </div>
+        <div class="card p-5 bg-[#161b22]/50">
+            <div class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider mb-2">Pending DNS</div>
+            <div class="text-2xl font-bold text-[#e3b341]"><%= domains.filter(d => !d.verified).length %></div>
+        </div>
+    </div>
+
+    <!-- Domains Table -->
+    <div class="card border-[#30363d] overflow-hidden mb-8">
+        <div class="card-header border-b border-[#30363d]">
+            <h3 class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#8b949e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-1.343 3-3s-1.343-3-3-3m0 6c-1.657 0-3-1.343-3-3s1.343-3 3-3M9 12a9 9 0 1118 0 9 9 0 01-18 0z"/></svg>
+                Configured Domains
+            </h3>
+        </div>
+
+        <% if (domains.length === 0) { %>
+            <div class="p-16 text-center">
+                <div class="w-16 h-16 bg-[#21262d] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-[#484f58]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.064M15 20.488V18a2 2 0 012-2h3.064"/></svg>
+                </div>
+                <h4 class="text-white font-semibold">No domains found</h4>
+                <p class="text-[#8b949e] text-sm mt-1 max-w-sm mx-auto">Connect a custom domain to give your tunnels a professional identity.</p>
+                <button onclick="document.getElementById('domain-modal').classList.remove('hidden')" class="btn-ghost mt-6 text-[#58a6ff]">Connect your first domain &rarr;</button>
+            </div>
+        <% } else { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider border-b border-[#30363d] bg-[#161b22]/30">
+                            <th class="px-6 py-4">Domain</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">DNS Target</th>
+                            <th class="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#30363d]">
+                        <% domains.forEach(d => { %>
+                            <tr class="hover:bg-[#161b22]/50 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <div class="font-semibold text-white"><%= d.domain %></div>
+                                    <div class="text-[11px] text-[#8b949e] mt-0.5">Added <%= new Date(d.created_at).toLocaleDateString() %></div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <% if (d.verified) { %>
+                                        <div class="flex items-center gap-1.5 text-[#3fb950] text-xs font-bold uppercase tracking-wide">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#3fb950] shadow-[0_0_8px_rgba(63,185,80,0.5)]"></span>
+                                            Verified
+                                        </div>
+                                    <% } else { %>
+                                        <div class="flex items-center gap-1.5 text-[#e3b341] text-xs font-bold uppercase tracking-wide animate-pulse">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#e3b341]"></span>
+                                            Pending DNS
+                                        </div>
+                                    <% } %>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <code class="bg-[#0d1117] border border-[#30363d] px-2 py-1 rounded text-[11px] text-[#58a6ff] font-mono">
+                                            relay.OutRay.dev
+                                        </code>
+                                        <button onclick="navigator.clipboard.writeText('relay.OutRay.dev');this.innerHTML='<svg class=\'w-3.5 h-3.5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>';setTimeout(()=>this.innerHTML='<svg class=\'w-3.5 h-3.5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>',2000)" class="text-[#8b949e] hover:text-white transition-colors">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <form method="POST" action="domains/<%= d.id %>/delete" onsubmit="return confirm('Remove this domain? This will break any tunnels using it.')">
+                                        <button class="text-[#f85149] hover:bg-[#f8514910] p-2 rounded-md transition-colors opacity-0 group-hover:opacity-100">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Instructions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+        <div class="card p-6 bg-gradient-to-br from-[#161b22] to-[#0d1117]">
+            <h4 class="text-white font-bold mb-4 flex items-center gap-2">
+                <span class="w-6 h-6 rounded bg-[#1f6feb] flex items-center justify-center text-[11px]">1</span>
+                Configure DNS
+            </h4>
+            <p class="text-[#8b949e] leading-relaxed mb-4">
+                To pointed your custom domain to OutRay, you need to create a <strong>CNAME</strong> record in your DNS provider (Cloudflare, GoDaddy, etc.).
+            </p>
+            <div class="space-y-3 bg-black/30 p-4 rounded-lg border border-[#30363d]">
+                <div class="flex justify-between text-xs">
+                    <span class="text-[#8b949e]">Type</span>
+                    <span class="text-white font-mono font-bold">CNAME</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-[#8b949e]">Name</span>
+                    <span class="text-white font-mono font-bold">api</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-[#8b949e]">Target</span>
+                    <span class="text-[#58a6ff] font-mono font-bold">relay.OutRay.dev</span>
+                </div>
+            </div>
+        </div>
+        <div class="card p-6 bg-gradient-to-br from-[#161b22] to-[#0d1117]">
+            <h4 class="text-white font-bold mb-4 flex items-center gap-2">
+                <span class="w-6 h-6 rounded bg-[#238636] flex items-center justify-center text-[11px]">2</span>
+                Start Tunneling
+            </h4>
+            <p class="text-[#8b949e] leading-relaxed mb-4">
+                Once the DNS record is propagated, you can launch a tunnel using your custom domain directly from the CLI.
+            </p>
+            <div class="bg-black/30 p-4 rounded-lg border border-[#30363d]">
+                <code class="text-[11px] font-mono text-[#79c0ff]">
+                    OutRay start --port 3000 --domain api.yourdomain.com
+                </code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="domain-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="card w-full max-w-md shadow-2xl border-[#30363d] bg-[#0d1117]">
+        <div class="card-header border-b border-[#30363d] px-6 py-4 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">Add Custom Domain</h3>
+            <button onclick="document.getElementById('domain-modal').classList.add('hidden')" class="text-[#8b949e] hover:text-white">&times;</button>
+        </div>
+        <form method="POST" action="domains" class="p-6 space-y-6">
+            <div>
+                <label class="block text-[11px] font-bold text-[#8b949e] uppercase tracking-wider mb-2">DOMAIN NAME</label>
+                <input name="domain" class="input py-3 px-4 text-base" placeholder="e.g., api.cloudsmith.com" required>
+                <p class="text-[11px] text-[#484f58] mt-2">Example: tunnel.example.com or example.com</p>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="btn-primary flex-1 justify-center py-3">Add and Continue</button>
+                <button type="button" onclick="document.getElementById('domain-modal').classList.add('hidden')" class="btn-ghost flex-1 justify-center py-3 border-[#30363d]">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/end') %>

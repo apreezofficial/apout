@@ -1,0 +1,103 @@
+<%- include('partials/sidebar', {pageTitle:'Team Members', activeNav:'members', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-5xl w-full">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Organization Members</h1>
+            <p class="text-[#8b949e] text-sm mt-1">Manage collaborators and team roles for <strong><%= activeOrg ? activeOrg.name : 'your organization' %></strong>.</p>
+        </div>
+        <button onclick="document.getElementById('invite-modal').classList.remove('hidden')" class="btn-primary" style="padding: 10px 20px;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Invite Member
+        </button>
+    </div>
+
+    <!-- Members List -->
+    <div class="card border-[#30363d] overflow-hidden shadow-xl">
+        <div class="card-header border-b border-[#30363d] bg-[#161b22]/30 flex items-center justify-between">
+            <h3 class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#8b949e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                Active Members
+            </h3>
+            <span class="badge badge-gray"><%= members.length %> Seat<%= members.length>1?'s':'' %> Occupied</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider border-b border-[#30363d]">
+                        <th class="px-6 py-4">User</th>
+                        <th class="px-6 py-4">Role</th>
+                        <th class="px-6 py-4">Joined</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#21262d]">
+                    <% members.forEach(m => { %>
+                        <tr class="hover:bg-[#161b22]/50 transition-colors group">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white text-sm font-black shadow-lg ring-1 ring-white/10">
+                                        <%= m.username.charAt(0).toUpperCase() %>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-white flex items-center gap-2">
+                                            <%= m.username %>
+                                            <% if(m.id === user.id){ %>
+                                                <span class="text-[10px] bg-[#3fb950]/10 text-[#3fb950] px-1.5 py-0.5 rounded border border-[#3fb950]/20">YOU</span>
+                                            <% } %>
+                                        </div>
+                                        <div class="text-[11px] text-[#8b949e] mt-0.5"><%= m.email || m.username + '@' + activeOrg.slug + '.OutRay' %></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <% const roleColor = m.role==='owner'?'badge-blue':m.role==='admin'?'badge-green':'badge-gray'; %>
+                                <span class="badge <%= roleColor %> uppercase tracking-widest text-[10px] font-black"><%= m.role %></span>
+                            </td>
+                            <td class="px-6 py-4 text-[12px] text-[#8b949e]">
+                                <%= new Date(m.created_at||Date.now()).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) %>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <% if(m.id !== user.id) { %>
+                                    <button class="text-[#8b949e] hover:text-[#f85149] transition-colors p-2 rounded-lg hover:bg-[#f8514910] opacity-0 group-hover:opacity-100">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"/></svg>
+                                    </button>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="invite-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="card w-full max-w-sm shadow-2xl bg-[#0d1117] border-[#30363d]">
+        <div class="card-header border-b border-[#30363d] px-6 py-4 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">Invite Collaborator</h3>
+            <button onclick="document.getElementById('invite-modal').classList.add('hidden')" class="text-[#8b949e] hover:text-white">&times;</button>
+        </div>
+        <form method="POST" action="members/invite" class="p-6 space-y-6">
+            <div>
+                <label class="block text-[11px] font-bold text-[#8b949e] uppercase tracking-wider mb-2">USERNAME / EMAIL</label>
+                <input name="username" class="input py-3 px-4" placeholder="Enter their ID" required>
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-[#8b949e] uppercase tracking-wider mb-2">GRANT ROLE</label>
+                <select name="role" class="input py-3 px-4 cursor-pointer">
+                    <option value="member">Collaborator (View-only)</option>
+                    <option value="admin">Administrator (Full access)</option>
+                </select>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="btn-primary flex-1 justify-center py-3">Send Invitation</button>
+                <button type="button" onclick="document.getElementById('invite-modal').classList.add('hidden')" class="btn-ghost flex-1 justify-center py-3">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/end') %>

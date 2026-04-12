@@ -1,0 +1,16 @@
+{
+    "name": "username/apout",
+    "description": "A PHP-based ngrok alternative.",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "symfony/console": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Apout\\": "src/"
+        }
+    },
+    "bin": ["bin/apout"],
+    "minimum-stability": "stable"
+}

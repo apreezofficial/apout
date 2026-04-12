@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <title>Documentation — OutRay</title>
+    <style>
+        .docs-wrapper {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 48px;
+            padding-top: 140px;
+            min-height: 100vh;
+        }
+        
+        /* ── Sidebar ── */
+        .docs-sidebar {
+            position: sticky;
+            top: 140px;
+            height: calc(100vh - 140px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding-right: 24px;
+        }
+        .docs-sidebar::-webkit-scrollbar { width: 2px; }
+        .docs-nav-group { margin-bottom: 32px; }
+        .docs-nav-group h4 {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+        .docs-nav-link {
+            display: block;
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.2s;
+            opacity: 0.7;
+        }
+        .docs-nav-link:hover { opacity: 1; color: var(--accent); transform: translateX(4px); }
+        .docs-nav-link.active { opacity: 1; color: var(--accent); font-weight: 600; }
+
+        /* ── Content ── */
+        .docs-content {
+            max-width: 800px;
+            padding-bottom: 100px;
+        }
+        .docs-content section {
+            padding: 40px 0 80px;
+            border-bottom: 1px solid var(--border);
+        }
+        .docs-content section:last-child { border-bottom: none; }
+        
+        .docs-content h2 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+            color: #fff;
+        }
+        .docs-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+        .docs-content p {
+            font-size: 16px;
+            color: var(--muted);
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+        
+        /* ── Code Blocks ── */
+        .code-block {
+            background: #08111f;
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            position: relative;
+            margin: 32px 0;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        .code-block pre { overflow-x: auto; color: #e2e8f0; }
+        .code-block .comment { color: #4a5568; }
+        .code-block .keyword { color: var(--accent3); }
+        .code-block .string { color: var(--pink); }
+
+        .note {
+            background: rgba(79, 142, 247, 0.05);
+            border-left: 4px solid var(--accent);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 32px 0;
+        }
+        .note p { margin-bottom: 0; font-size: 15px; color: var(--text); }
+
+        @media (max-width: 900px) {
+            .docs-wrapper { grid-template-columns: 1fr; }
+            .docs-sidebar { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="net-canvas"></canvas>
+    <%- include('partials/nav') %>
+
+    <div class="container docs-wrapper">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+            <div class="docs-nav-group">
+                <h4>Getting Started</h4>
+                <a href="#introduction" class="docs-nav-link active">Introduction</a>
+                <a href="#installation" class="docs-nav-link">Installation</a>
+                <a href="#authentication" class="docs-nav-link">Authentication</a>
+            </div>
+            <div class="docs-nav-group">
+                <h4>Tunneling</h4>
+                <a href="#http-tunnels" class="docs-nav-link">HTTP Tunnels</a>
+                <a href="#custom-subdomains" class="docs-nav-link">Custom Subdomains</a>
+                <a href="#request-inspect" class="docs-nav-link">Inspecting Requests</a>
+            </div>
+            <div class="docs-nav-group">
+                <h4>Platform</h4>
+                <a href="#organizations" class="docs-nav-link">Organizations</a>
+                <a href="#api-tokens" class="docs-nav-link">API Tokens</a>
+                <a href="#domains" class="docs-nav-link">Custom Domains</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <section id="introduction">
+                <div class="section-eyebrow">Docs</div>
+                <h2>Introduction</h2>
+                <p>Welcome to OutRay—the fastest way to bring your local server to the internet. Whether you're testing webhooks, sharing a demo with a client, or connecting mobile apps to your dev machine, OutRay provides a secure, HTTPS-ready tunnel in under a second.</p>
+                <div class="note">
+                    <p>💡 <strong>Free by Apcodesphere:</strong> All features of OutRay are completely free to use, including custom subdomains and organizational management.</p>
+                </div>
+            </section>
+
+            <section id="installation">
+                <h2>Installation</h2>
+                <p>OutRay is delivered as a lightweight CLI tool. You can install it using any major JavaScript package manager.</p>
+                
+                <h3>NPM</h3>
+                <div class="code-block" data-lang="terminal">
+                    <pre><span class="keyword">npm</span> install -g OutRay-cli</pre>
+                </div>
+
+                <h3>Yarn</h3>
+                <div class="code-block" data-lang="terminal">
+                    <pre><span class="keyword">yarn</span> global add OutRay-cli</pre>
+                </div>
+
+                <p>Once installed, verify the installation by running <code>OutRay --version</code> in your terminal.</p>
+            </section>
+
+            <section id="authentication">
+                <h2>Authentication</h2>
+                <p>To link your machine to your account and track your tunnels, you need to authenticate using your unique API token.</p>
+                <ol style="margin-bottom: 24px; padding-left: 20px; color: var(--muted); line-height: 2;">
+                    <li>Go to your <a href="/login" style="color: var(--accent);">OutRay Dashboard</a>.</li>
+                    <li>Navigate to the <strong>API Tokens</strong> tab.</li>
+                    <li>Copy your Default Token.</li>
+                    <li>Run the login command in your terminal.</li>
+                </ol>
+                <div class="code-block" data-lang="terminal">
+                    <pre><span class="keyword">OutRay</span> login YOUR_SECRET_TOKEN</pre>
+                </div>
+            </section>
+
+            <section id="http-tunnels">
+                <h2>HTTP Tunnels</h2>
+                <p>Starting a tunnel is as simple as pointing the CLI to your local port. OutRay will automatically detect if you’re running a web server and generate a secure public URL.</p>
+                
+                <div class="code-block" data-lang="terminal">
+                    <pre><span class="keyword">OutRay</span> start --port <span class="string">3000</span></pre>
+                </div>
+
+                <h3>Common Options</h3>
+                <ul style="margin-bottom: 24px; padding-left: 20px; color: var(--muted); line-height: 2;">
+                    <li><code>--port, -p</code> Specify the local port (Required)</li>
+                    <li><code>--subdomain, -s</code> Request a custom subdomain</li>
+                    <li><code>--protocol, -P</code> Use http or https (Default: https)</li>
+                </ul>
+            </section>
+
+            <section id="request-inspect">
+                <h2>Request Inspector</h2>
+                <p>OutRay includes a built-in inspector to help you debug incoming traffic. You can view all requests in real-time directly on the web dashboard under the <strong>Requests</strong> tab.</p>
+                <p>You can see:</p>
+                <ul>
+                    <li>HTTP Method and Path</li>
+                    <li>Full Request Headers</li>
+                    <li>JSON/Form Body Payloads</li>
+                    <li>Response Status codes and Latency</li>
+                </ul>
+            </section>
+
+            <section id="organizations">
+                <h2>Organizations</h2>
+                <p>Working in a team? OutRay Organizations allow you to group tunnels, subdomains, and members under one entity.</p>
+                <p>Created organizations have their own unique slugs (e.g., <code>OutRay.dev/dashboard/my-team</code>) making it easy to collaborate on project silos.</p>
+            </section>
+        </main>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // Smooth scroll for nav links
+        document.querySelectorAll('.docs-nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                window.scrollTo({
+                    top: target.offsetTop - 120,
+                    behavior: 'smooth'
+                });
+                
+                // Update active state
+                document.querySelectorAll('.docs-nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // Intersection Observer to update sidebar on scroll
+        const sections = document.querySelectorAll('.docs-content section');
+        const navLinks = document.querySelectorAll('.docs-nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = "";
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        gsap.from('.docs-sidebar', {opacity:0, x:-40, duration:1, ease:'power3.out'});
+        gsap.from('.docs-content', {opacity:0, y:40, duration:1, ease:'power3.out', delay:0.2});
+        
+        <%- include('partials/network_js') %>
+    </script>
+</body>
+</html>

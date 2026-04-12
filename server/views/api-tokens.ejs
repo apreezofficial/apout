@@ -1,0 +1,121 @@
+<%- include('partials/sidebar', {pageTitle:'API Tokens', activeNav:'api-tokens', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-5xl w-full">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Access Tokens</h1>
+            <p class="text-[#8b949e] text-sm mt-1">Authenticate your CLI and external automations securely.</p>
+        </div>
+        <button onclick="document.getElementById('token-modal').classList.remove('hidden')" class="btn-primary" style="padding: 10px 20px;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Create New Token
+        </button>
+    </div>
+
+    <!-- Main Account Token -->
+    <div class="card mb-8 border-[#1f6feb]/30 bg-gradient-to-br from-[#161b22] to-[#0d1117]">
+        <div class="card-header border-b border-[#30363d] flex items-center justify-between">
+            <h3 class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#58a6ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Primary Account Token
+            </h3>
+            <span class="badge badge-blue">Permanent</span>
+        </div>
+        <div class="p-6">
+            <p class="text-[13px] text-[#8b949e] mb-4">This is your master token. It has full access to all your organizations and tunnels.</p>
+            <div class="flex items-center gap-4">
+                <div class="flex-1 px-4 py-3 bg-black/40 border border-[#30363d] rounded-xl font-mono text-[13px] text-[#58a6ff] truncate">
+                    <%= user.token %>
+                </div>
+                <button onclick="navigator.clipboard.writeText('<%= user.token %>');this.innerHTML='<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>';setTimeout(()=>this.innerHTML='<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>',2000)" class="w-11 h-11 flex items-center justify-center border border-[#30363d] rounded-xl text-[#8b949e] hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+            </div>
+            <div class="mt-4 p-3 bg-blue-500/5 rounded-lg border border-blue-500/10 text-[11px] text-[#58a6ff] font-mono">
+                $ OutRay login <%= user.token %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Tokens List -->
+    <div class="card border-[#30363d] overflow-hidden">
+        <div class="card-header border-b border-[#30363d] bg-[#161b22]/30">
+            <h3>Additional Tokens</h3>
+        </div>
+
+        <% if (extraTokens.length === 0) { %>
+            <div class="p-16 text-center">
+                <div class="w-16 h-16 bg-[#21262d] rounded-full flex items-center justify-center mx-auto mb-4 opacity-50">
+                    <svg class="w-8 h-8 text-[#484f58]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                </div>
+                <h4 class="text-white font-semibold">No additional tokens</h4>
+                <p class="text-[#8b949e] text-sm mt-1 max-w-sm mx-auto">Create scoped tokens for CI/CD pipelines, different apps, or team members.</p>
+            </div>
+        <% } else { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider border-b border-[#30363d]">
+                            <th class="px-6 py-4">Label</th>
+                            <th class="px-6 py-4">Token Preview</th>
+                            <th class="px-6 py-4">Created</th>
+                            <th class="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#21262d]">
+                        <% extraTokens.forEach(t => { %>
+                            <tr class="hover:bg-[#161b22]/50 transition-colors group">
+                                <td class="px-6 py-4 font-semibold text-white">
+                                    <%= t.name || 'Unnamed Token' %>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <code class="text-[12px] font-mono text-[#58a6ff] bg-[#1f6feb]/10 px-2 py-0.5 rounded truncate max-w-[120px]">
+                                            <%= t.token_value.substring(0, 8) %>••••••••
+                                        </code>
+                                        <button onclick="navigator.clipboard.writeText('<%= t.token_value %>');alert('Full token copied!')" class="text-[#484f58] hover:text-white transition-colors">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-[#8b949e] text-xs">
+                                    <%= new Date(t.created_at).toLocaleDateString() %>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <form method="POST" action="api-tokens/<%= t.id %>/delete" onsubmit="return confirm('Revoke this token? All apps using it will lose access.')">
+                                        <button class="text-[#f85149] hover:bg-[#f8514910] p-2 rounded-md transition-colors opacity-0 group-hover:opacity-100">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="token-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="card w-full max-w-sm shadow-2xl bg-[#0d1117] border-[#30363d]">
+        <div class="card-header border-b border-[#30363d] px-6 py-4 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">New Access Token</h3>
+            <button onclick="document.getElementById('token-modal').classList.add('hidden')" class="text-[#8b949e] hover:text-white">&times;</button>
+        </div>
+        <form method="POST" action="api-tokens/generate" class="p-6 space-y-5">
+            <div>
+                <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">TOKEN LABEL</label>
+                <input name="name" class="input py-3 px-4 text-white" placeholder="e.g. CI/CD Runner" required autofocus>
+                <p class="text-[10px] text-[#484f58] mt-2">A descriptive name to help you identify where this token is used.</p>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="btn-primary flex-1 justify-center py-3">Generate Token</button>
+                <button type="button" onclick="document.getElementById('token-modal').classList.add('hidden')" class="btn-ghost flex-1 justify-center py-3">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/end') %>

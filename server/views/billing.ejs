@@ -1,0 +1,131 @@
+<%- include('partials/sidebar', {pageTitle:'Billing & Plans', activeNav:'billing', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-5xl w-full">
+    <div class="mb-10">
+        <h1 class="text-3xl font-bold text-white tracking-tight">Billing & Sponsorship</h1>
+        <p class="text-[#8b949e] text-sm mt-1">OutRay is a community-first platform supported by creators.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+        <!-- Plan Detail -->
+        <div class="lg:col-span-2">
+            <div class="card bg-[#161b22]/50 border-[#30363d] overflow-hidden">
+                <div class="p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <div class="text-[10px] font-bold text-[#58a6ff] uppercase tracking-[0.2em] mb-1">Current License</div>
+                            <h2 class="text-4xl font-black text-white">Founder Edition</h2>
+                        </div>
+                        <div class="px-4 py-1.5 rounded-full bg-[#3fb950]/10 text-[#3fb950] border border-[#3fb950]/20 text-[10px] font-black uppercase tracking-widest">
+                            Active Forever
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3 text-sm text-[#c9d1d9]">
+                                <div class="w-5 h-5 rounded-full bg-[#3fb950]/20 flex items-center justify-center text-[#3fb950]">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                Unlimited Organizations
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-[#c9d1d9]">
+                                <div class="w-5 h-5 rounded-full bg-[#3fb950]/20 flex items-center justify-center text-[#3fb950]">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                Custom Subdomains (.OutRay.dev)
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-[#c9d1d9]">
+                                <div class="w-5 h-5 rounded-full bg-[#3fb950]/20 flex items-center justify-center text-[#3fb950]">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                Vanity Custom Domains
+                            </li>
+                        </ul>
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3 text-sm text-[#c9d1d9]">
+                                <div class="w-5 h-5 rounded-full bg-[#3fb950]/20 flex items-center justify-center text-[#3fb950]">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                Real-time Traffic Monitor
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-[#c9d1d9]">
+                                <div class="w-5 h-5 rounded-full bg-[#3fb950]/20 flex items-center justify-center text-[#3fb950]">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                Advanced CLI Tooling
+                            </li>
+                            <li class="flex items-center gap-3 text-sm text-[#c9d1d9]">
+                                <div class="w-5 h-5 rounded-full bg-[#3fb950]/20 flex items-center justify-center text-[#3fb950]">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                                API Integrations
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-[#21262d] p-5 flex items-center justify-between border-t border-[#30363d]">
+                    <span class="text-xs text-[#8b949e]">Your account is fully unlocked.</span>
+                    <span class="text-white font-bold text-xs">$0.00 / mo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Card -->
+        <div class="card p-8 bg-gradient-to-br from-[#1f6feb]/20 to-[#a371f7]/10 border-[#1f6feb]/30 flex flex-col justify-between">
+            <div>
+                <div class="w-12 h-12 rounded-2xl bg-[#1f6feb] flex items-center justify-center text-white mb-6 shadow-xl">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Support the Project</h3>
+                <p class="text-sm text-[#8b949e] leading-relaxed mb-6">
+                    OutRay is free thanks to the sponsorship of <strong>Apcodesphere</strong>. If you like the tool, consider supporting the developer.
+                </p>
+            </div>
+            <a href="https://preciousadedokun.com.ng" target="_blank" class="btn-primary w-full justify-center py-3">
+                Meet the Creator
+            </a>
+        </div>
+    </div>
+
+    <!-- Sponsor Banner -->
+    <div class="card p-1 pb-1 overflow-hidden bg-gradient-to-r from-[#1f6feb] via-[#a371f7] to-[#1f6feb] animate-gradient-x">
+        <div class="bg-[#0d1117] rounded-[7px] p-10 text-center relative overflow-hidden">
+             <!-- Decorative glow -->
+             <div class="absolute -top-24 -left-24 w-48 h-48 bg-[#1f6feb] rounded-full blur-[100px] opacity-20"></div>
+             <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-[#a371f7] rounded-full blur-[100px] opacity-20"></div>
+             
+             <div class="relative z-10">
+                 <h2 class="text-4xl font-black text-white mb-4">Zero Costs. Infinite Tunnels.</h2>
+                 <p class="text-[#8b949e] text-lg max-w-2xl mx-auto mb-8">
+                     We believe local development should be accessible to everyone. No paywalls, no limits, just pure tunneling magic.
+                 </p>
+                 <div class="flex items-center justify-center gap-8 border-t border-[#30363d] pt-8 mt-8">
+                     <div class="text-left">
+                         <div class="text-[10px] font-bold text-[#8b949e] uppercase mb-1">Sponsored by</div>
+                         <div class="text-xl font-black text-white hover:text-[#58a6ff] transition-colors cursor-pointer">Apcodesphere</div>
+                     </div>
+                     <div class="w-px h-10 bg-[#30363d]"></div>
+                     <div class="text-left">
+                         <div class="text-[10px] font-bold text-[#8b949e] uppercase mb-1">Status</div>
+                         <div class="text-xl font-black text-[#3fb950]">Operational</div>
+                     </div>
+                 </div>
+             </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes gradient-x {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .animate-gradient-x {
+        background-size: 200% 200%;
+        animation: gradient-x 6s ease infinite;
+    }
+</style>
+
+<%- include('partials/end') %>

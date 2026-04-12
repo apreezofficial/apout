@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head') %>
+    <title>Features — OutRay</title>
+</head>
+<body>
+    <canvas id="net-canvas"></canvas>
+    <%- include('partials/nav') %>
+
+    <section style="padding-top: 160px;">
+        <div class="container">
+            <div class="anim-fade">
+                <div class="section-eyebrow">Capabilities</div>
+                <h1 class="section-title">Everything you need<br>to scale your local dev.</h1>
+            </div>
+
+            <div class="features-grid" style="margin-top: 80px;">
+                <div class="feature-card anim-scale">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Global Edge Network</h3>
+                    <p>Your tunnels are routed through our global edge nodes, ensuring minimum latency regardless of where your visitors are.</p>
+                </div>
+                <div class="feature-card anim-scale">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>DDoS Protection</h3>
+                    <p>Enterprise-grade protection against layer 7 attacks. Keep your local machine safe even when exposing it to the public internet.</p>
+                </div>
+                <div class="feature-card anim-scale">
+                    <div class="feature-icon">🔑</div>
+                    <h3>API Driven Tunnels</h3>
+                    <p>Integrate OutRay into your CI/CD pipelines or custom scripts using our robust API and SDKs.</p>
+                </div>
+                <div class="feature-card anim-scale">
+                    <div class="feature-icon">🔗</div>
+                    <h3>TCP & UDP Tunnels</h3>
+                    <p>Not just HTTP. Tunnel SSH, RDP, Minecraft servers, or any network protocol with zero configuration.</p>
+                </div>
+                <div class="feature-card anim-scale">
+                    <div class="feature-icon">📝</div>
+                    <h3>Detailed Logs</h3>
+                    <p>Every packet is accounted for. Use our dashboard to debug complex webhook interactions and see full request payloads.</p>
+                </div>
+                <div class="feature-card anim-scale">
+                    <div class="feature-icon">✨</div>
+                    <h3>Vanity URLs</h3>
+                    <p>Branded tunnels with your own subdomains and domains. Make your dev environment feel like production.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: var(--bg2);">
+         <div class="container">
+            <div class="anim-fade text-center">
+                <h2 class="section-title">Designed for modern workflows.</h2>
+                <p class="section-sub" style="margin: 0 auto;">OutRay fits perfectly into your tech stack, whether you're building a SaaS, a mobile app, or a hardware project.</p>
+            </div>
+         </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.to('.anim-fade', {opacity:1, y:0, duration:0.8, stagger:0.2, ease:'power2.out'});
+        gsap.to('.anim-scale', {opacity:1, scale:1, duration:.6, stagger:0.1, ease:'back.out(1.7)'});
+        <%- include('partials/network_js') %>
+    </script>
+</body>
+</html>

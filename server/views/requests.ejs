@@ -1,0 +1,123 @@
+<%- include('partials/sidebar', {pageTitle:'Traffic Monitor', activeNav:'requests', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-5xl w-full">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+                Traffic Monitor
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] bg-[#3fb950]/10 text-[#3fb950] border border-[#3fb950]/20 animate-pulse">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#3fb950]"></span>
+                    Live
+                </span>
+            </h1>
+            <p class="text-[#8b949e] text-sm mt-1">Real-time inspection of HTTP requests flowing through your organization's tunnels.</p>
+        </div>
+        <div class="flex gap-2">
+           <button onclick="window.location.reload()" class="btn-ghost flex items-center gap-2 text-xs">
+               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+               Refresh
+           </button>
+        </div>
+    </div>
+
+    <!-- Log Table -->
+    <div class="card border-[#30363d] overflow-hidden shadow-2xl">
+        <div class="card-header border-b border-[#30363d] bg-[#161b22]/30 flex items-center justify-between">
+            <h3 class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#8b949e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Inbound Requests
+            </h3>
+            <span class="text-[11px] font-bold text-[#484f58] uppercase tracking-widest"><%= requests.length %> Events Cached</span>
+        </div>
+
+        <% if (requests.length === 0) { %>
+            <div class="p-20 text-center">
+                <div class="w-20 h-20 bg-[#21262d] rounded-2xl flex items-center justify-center mx-auto mb-6 transform rotate-3">
+                    <svg class="w-10 h-10 text-[#484f58]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <h4 class="text-white font-bold text-lg">Waiting for traffic...</h4>
+                <p class="text-[#8b949e] text-sm mt-2 max-w-sm mx-auto leading-relaxed">Each request to your active tunnels will be captured here in real-time with headers, status codes, and payloads.</p>
+            </div>
+        <% } else { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-[10px] font-bold text-[#8b949e] uppercase tracking-[0.05em] border-b border-[#30363d]">
+                            <th class="px-6 py-4">Method</th>
+                            <th class="px-6 py-4">Path</th>
+                            <th class="px-6 py-4">Tunnel Address</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4 text-right">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#21262d]">
+                        <% requests.reverse().forEach(r => { %>
+                            <tr class="hover:bg-[#1f6feb]/5 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <% 
+                                        const color = r.method === 'GET' ? 'text-[#3fb950] bg-[#3fb950]/10 border-[#3fb950]/20' : 
+                                                      r.method === 'POST' ? 'text-[#58a6ff] bg-[#58a6ff]/10 border-[#58a6ff]/20' : 
+                                                      r.method === 'PUT' ? 'text-[#d29922] bg-[#d29922]/10 border-[#d29922]/20' : 
+                                                      r.method === 'DELETE' ? 'text-[#f85149] bg-[#f85149]/10 border-[#f85149]/20' : 
+                                                      'text-[#c9d1d9] bg-[#c9d1d9]/10 border-[#c9d1d9]/20';
+                                    %>
+                                    <span class="font-mono font-bold text-[10px] px-2 py-1 rounded border <%= color %>">
+                                        <%= r.method %>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="font-mono text-[13px] text-[#c9d1d9] truncate max-w-xs group-hover:text-white transition-colors" title="<%= r.path %>">
+                                        <%= r.path %>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-[12px] text-[#8b949e] flex items-center gap-1.5 font-mono">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#1f6feb]"></span>
+                                        <%= r.tunnel %>.OutRay.dev
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <% 
+                                        const statusColor = r.status < 300 ? 'text-[#3fb950] bg-[#3fb950]/10 border-[#3fb950]/20' :
+                                                          r.status < 400 ? 'text-[#58a6ff] bg-[#58a6ff]/10 border-[#58a6ff]/20' :
+                                                          r.status < 500 ? 'text-[#e3b341] bg-[#e3b341]/10 border-[#e3b341]/20' :
+                                                          'text-[#f85149] bg-[#f85149]/10 border-[#f85149]/20';
+                                    %>
+                                    <span class="px-2 py-0.5 rounded text-[11px] font-bold border <%= statusColor %>">
+                                        <%= r.status %>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="text-[10px] text-[#484f58] font-mono"><%= new Date(r.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) %></div>
+                                    <div class="text-[9px] text-[#30363d] mt-0.5"><%= new Date(r.created_at).toLocaleDateString() %></div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Monitor Tips -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex items-start gap-3 p-4 bg-[#161b22]/30 border border-[#30363d] rounded-xl">
+             <div class="text-blue-500 mt-1">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+             </div>
+             <p class="text-[12px] text-[#8b949e] leading-relaxed">
+                 Need to inspect request bodies or headers in detail? Use the <strong class="text-[#c9d1d9] font-mono text-[11px]">OutRay inspect</strong> command in your local terminal to see full payloads.
+             </p>
+        </div>
+        <div class="flex items-start gap-3 p-4 bg-[#161b22]/30 border border-[#30363d] rounded-xl">
+             <div class="text-green-500 mt-1">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+             </div>
+             <p class="text-[12px] text-[#8b949e] leading-relaxed">
+                 Requests are logged instantly. If you are testing webhooks, this monitor will help you confirm that OutRay is relaying them to your local server correctly.
+             </p>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/end') %>

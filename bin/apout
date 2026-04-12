@@ -1,0 +1,33 @@
+#!/usr/bin/env php
+<?php
+
+$autoloadPaths = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+];
+
+$autoloadFile = null;
+foreach ($autoloadPaths as $path) {
+    if (file_exists($path)) {
+        $autoloadFile = $path;
+        break;
+    }
+}
+
+if (!$autoloadFile) {
+    fwrite(STDERR, "You must set up the project dependencies, run 'composer install'" . PHP_EOL);
+    exit(1);
+}
+
+require $autoloadFile;
+
+use Symfony\Component\Console\Application;
+use Apout\Client\StartTunnelCommand;
+use Apout\Auth\LoginCommand;
+
+$application = new Application('Apout', '1.0.0');
+
+$application->add(new StartTunnelCommand());
+$application->add(new LoginCommand());
+
+$application->run();

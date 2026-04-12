@@ -1,0 +1,53 @@
+<%- include('partials/sidebar', {pageTitle:'Create Organization', activeNav:'dashboard', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-2xl w-full">
+    <div class="mb-6">
+        <h1 class="text-[22px] font-bold text-[#e6edf3]">Create Organization</h1>
+        <p class="text-[#8b949e] text-sm mt-1">Organizations let you share tunnels, domains, and team members.</p>
+    </div>
+
+    <% if(!activeOrg) { %>
+    <div class="mb-5 p-3 rounded-md bg-[#e3b341]/10 border border-[#e3b341]/30 text-[#e3b341] text-sm flex items-center gap-2">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        You don't have an organization yet. Create one to access your dashboard.
+    </div>
+    <% } %>
+
+    <% if(error) { %>
+    <div class="mb-5 p-3 rounded-md bg-red-500/10 border border-red-500/30 text-red-400 text-sm"><%= error %></div>
+    <% } %>
+
+    <div class="card">
+        <div class="card-header"><h3>🏢 New Organization</h3></div>
+        <form method="POST" action="/organization/create" class="p-6 space-y-5">
+            <div>
+                <label class="block text-[12px] font-semibold text-[#8b949e] mb-2">ORGANIZATION NAME</label>
+                <input name="name" class="input" placeholder="Acme Corp" required>
+            </div>
+            <div>
+                <label class="block text-[12px] font-semibold text-[#8b949e] mb-2">SLUG <span class="text-[#484f58] font-normal">(used in your dashboard URL)</span></label>
+                <div class="flex items-center gap-2 bg-[#0d1117] border border-[#30363d] rounded-md overflow-hidden focus-within:border-[#1f6feb] transition-colors">
+                    <span class="text-[12px] text-[#484f58] px-3 py-2.5 border-r border-[#30363d] whitespace-nowrap bg-[#161b22]">OutRay.dev/</span>
+                    <input name="slug" class="flex-1 bg-transparent text-[#c9d1d9] px-3 py-2.5 text-[13px] font-mono outline-none" placeholder="acme-corp" required
+                        oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')">
+                </div>
+                <p class="text-[11px] text-[#484f58] mt-2">3–40 chars. Lowercase letters, numbers, and hyphens only.</p>
+            </div>
+
+            <!-- Reserved slugs hint -->
+            <details class="text-[11px] text-[#484f58]">
+                <summary class="cursor-pointer hover:text-[#8b949e] transition-colors">⚠ View reserved slugs</summary>
+                <div class="mt-2 p-3 bg-[#0d1117] rounded-md border border-[#30363d] font-mono leading-loose">
+                    admin, api, www, app, dashboard, login, logout, register, auth, support, help, billing,
+                    settings, static, assets, public, status, docs, blog, about, contact, pricing, terms,
+                    privacy, security, legal, mail, smtp, ftp, vpn, git, dev, test, staging, prod,
+                    OutRay, apcodesphere, organization, org, tunnel, tunnels, webhook
+                </div>
+            </details>
+
+            <button type="submit" class="btn-primary">Create Organization</button>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/end') %>

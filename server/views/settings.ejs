@@ -1,0 +1,184 @@
+<%- include('partials/sidebar', {pageTitle:'Settings', activeNav:'settings', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-4xl w-full">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-white tracking-tight">Settings</h1>
+        <p class="text-[#8b949e] text-sm mt-1">Manage your account preferences and organization controls.</p>
+    </div>
+
+    <!-- Flash message -->
+    <% if(flash) { %>
+        <div class="mb-6 p-4 rounded-xl border <%= flash.type==='success'?'bg-[#1f6feb]/10 border-[#1f6feb]/30 text-[#58a6ff]':'bg-red-500/10 border-red-500/30 text-red-400' %> text-sm flex items-center gap-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <%= flash.msg %>
+        </div>
+    <% } %>
+
+    <!-- Tabs Header -->
+    <div class="flex items-center gap-6 border-b border-[#30363d] mb-8">
+        <button onclick="switchTab('profile')" id="tab-btn-profile" class="tab-btn active pb-3 text-sm font-semibold transition-all relative">
+            Profile Settings
+        </button>
+        <button onclick="switchTab('org')" id="tab-btn-org" class="tab-btn pb-3 text-sm font-semibold transition-all relative">
+            Organization
+        </button>
+        <button onclick="switchTab('security')" id="tab-btn-security" class="tab-btn pb-3 text-sm font-semibold transition-all relative">
+            Security & Danger
+        </button>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="tab-profile" class="tab-content space-y-6">
+        <div class="card bg-[#161b22]/50 border-[#30363d]">
+            <div class="card-header border-b border-[#30363d] px-6 py-4">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Account Identity</h3>
+            </div>
+            <form method="POST" action="settings/profile" class="p-6 space-y-6">
+                <div class="flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1f6feb] to-[#a371f7] flex items-center justify-center text-2xl font-bold text-white shadow-xl">
+                        <%= user.username.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">Username</label>
+                        <input name="username" class="input bg-[#0d1117]" value="<%= user.username %>" placeholder="username">
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="btn-primary" style="padding: 10px 24px;">Update Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Organization Tab -->
+    <div id="tab-org" class="tab-content hidden space-y-6">
+        <% if(activeOrg) { %>
+            <div class="card bg-[#161b22]/50 border-[#30363d]">
+                <div class="card-header border-b border-[#30363d] px-6 py-4">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Organization Details</h3>
+                </div>
+                <form method="POST" action="settings/org" class="p-6 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">Display Name</label>
+                            <input name="org_name" class="input bg-[#0d1117]" value="<%= activeOrg.name %>">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">Organization Slug</label>
+                            <input class="input bg-[#0d1117] opacity-50" value="<%= activeOrg.slug %>" readonly>
+                            <p class="text-[10px] text-[#484f58] mt-2">Slug is permanent and cannot be changed.</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end pt-2">
+                        <button type="submit" class="btn-primary" style="padding: 10px 24px;">Save Org Settings</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card border border-[#30363d] p-6 bg-[#0d1117]/50">
+               <div class="flex items-center justify-between">
+                   <div>
+                       <h4 class="text-white font-bold">Transfer Ownership</h4>
+                       <p class="text-xs text-[#8b949e] mt-1">Move this organization to another user's account. You will become an Admin.</p>
+                   </div>
+                   <button onclick="document.getElementById('transfer-modal').classList.remove('hidden')" class="btn-ghost text-xs border-[#30363d]">Start Transfer</button>
+               </div>
+            </div>
+
+            <!-- Transfer Modal -->
+            <div id="transfer-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+                <div class="card w-full max-w-sm bg-[#0d1117] border-[#30363d] shadow-2xl">
+                    <div class="card-header border-b border-[#30363d] p-4 flex justify-between items-center">
+                        <h3 class="text-white font-bold">Transfer Ownership</h3>
+                        <button onclick="document.getElementById('transfer-modal').classList.add('hidden')" class="text-[#8b949e]">&times;</button>
+                    </div>
+                    <form method="POST" action="settings/transfer-ownership" class="p-6 space-y-4">
+                        <p class="text-[#8b949e] text-xs leading-relaxed">Please enter the username of the account you want to transfer ownership to.</p>
+                        <div>
+                            <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">New Owner Username</label>
+                            <input name="new_owner" class="input" placeholder="e.g. johndoe" required>
+                        </div>
+                        <div class="pt-2 flex gap-3">
+                            <button type="submit" class="btn-primary flex-1 justify-center">Confirm Transfer</button>
+                            <button type="button" onclick="document.getElementById('transfer-modal').classList.add('hidden')" class="btn-ghost flex-1 justify-center">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="p-10 text-center card bg-[#161b22]/30 border-dashed border-[#30363d]">
+                <p class="text-[#8b949e]">Select an organization from the sidebar to manage its settings.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Security Tab -->
+    <div id="tab-security" class="tab-content hidden space-y-8">
+        <div class="card bg-[#161b22]/50 border-[#30363d]">
+            <div class="card-header border-b border-[#30363d] px-6 py-4">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Change Password</h3>
+            </div>
+            <form method="POST" action="settings/password" class="p-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">Current Password</label>
+                        <input type="password" name="current_password" class="input bg-[#0d1117]" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">New Password</label>
+                        <input type="password" name="new_password" class="input bg-[#0d1117]" placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button type="submit" class="btn-primary" style="padding: 10px 24px;">Update Password</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card border-[#f8514930] bg-[#f8514905]">
+            <div class="p-6">
+                <h4 class="text-[#f85149] font-bold text-lg mb-2">Delete Account</h4>
+                <p class="text-[13px] text-[#8b949e] leading-relaxed mb-6">
+                    Once you delete your account, there is no going back. This will permanently delete your organizations, tunnels, and all associated traffic logs.
+                </p>
+                <form method="POST" action="settings/delete-account" onsubmit="return confirm('ARE YOU ABSOLUTELY SURE? This will wipe all your data.')" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">Confirm with your Password</label>
+                        <input type="password" name="password" class="input bg-black/30 border-[#f8514930]" placeholder="Enter password to confirm" required>
+                    </div>
+                    <button class="btn-danger w-full justify-center py-3 font-bold border-[#f8514950]">Permanently Delete Everything</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .tab-btn { color: #8b949e; }
+        .tab-btn.active { color: #fff; }
+        .tab-btn.active::after {
+            content:''; position: absolute; bottom: -1px; left:0; right:0; height: 2px;
+            background: #1f6feb; box-shadow: 0 0 10px rgba(31,111,235,0.5);
+        }
+    </style>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            // Show target
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-btn-' + tabId).classList.add('active');
+            
+            // Save state
+            history.replaceState(null, null, '?tab=' + tabId);
+        }
+
+        // Deep link
+        const params = new URLSearchParams(window.location.search);
+        if(params.get('tab')) switchTab(params.get('tab'));
+    </script>
+</div>
+
+<%- include('partials/end') %>

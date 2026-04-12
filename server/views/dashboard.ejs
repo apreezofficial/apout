@@ -1,0 +1,123 @@
+<%- include('partials/sidebar', {pageTitle:'Overview', activeNav:'dashboard', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-5xl w-full">
+    <div class="flex items-end justify-between mb-8">
+        <div>
+            <h1 class="text-[22px] font-bold text-[#e6edf3]">Overview</h1>
+            <p class="text-[#8b949e] text-sm mt-1">Hello, <strong class="text-[#c9d1d9]"><%= user.username %></strong> <% if(activeOrg){ %> — <span class="text-[#58a6ff]"><%= activeOrg.name %></span><% } %></p>
+        </div>
+    </div>
+
+    <!-- Invitations -->
+    <% if (typeof invites !== 'undefined' && invites.length > 0) { %>
+    <div class="mb-8 space-y-4">
+        <h3 class="text-[11px] font-bold text-[#8b949e] uppercase tracking-widest pl-1">Organization Invitations</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <% invites.forEach(i => { %>
+            <div class="card p-5 border-[#1f6feb]/30 bg-gradient-to-br from-[#1f6feb]/10 to-transparent">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-[#1f6feb] flex items-center justify-center text-white font-black shadow-lg shadow-blue-500/10">
+                            <%= i.org_name.charAt(0).toUpperCase() %>
+                        </div>
+                        <div>
+                            <div class="text-[14px] font-bold text-white">Join <%= i.org_name %></div>
+                            <div class="text-[11px] text-[#8b949e] mt-0.5">Invited by <span class="text-[#c9d1d9]"><%= i.inviter_name %></span></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <form method="POST" action="/invites/respond/<%= i.id %>">
+                            <input type="hidden" name="action" value="accept">
+                            <button type="submit" class="p-2 rounded-lg bg-[#3fb950] text-white hover:bg-[#2ea043] transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        </form>
+                        <form method="POST" action="/invites/respond/<%= i.id %>">
+                            <input type="hidden" name="action" value="decline">
+                            <button type="submit" class="p-2 rounded-lg bg-[#21262d] text-[#f85149] hover:bg-[#b6232420] border border-[#30363d] transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+    <% } %>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <% [{label:'Active Tunnels',value:tunnelCount||0,icon:'⚡',color:'#3fb950'},{label:'Subdomains',value:subdomainCount||0,icon:'🌐',color:'#58a6ff'},{label:'API Tokens',value:tokenCount||1,icon:'🔑',color:'#e3b341'},{label:'Members',value:memberCount||1,icon:'👥',color:'#bc8cff'}].forEach(s=>{ %>
+        <div class="card p-4"><div class="text-[22px] mb-2"><%= s.icon %></div><div class="text-[26px] font-bold" style="color:<%= s.color %>"><%= s.value %></div><div class="text-[11px] text-[#8b949e] mt-1 font-medium"><%= s.label %></div></div>
+        <% }) %>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="card">
+            <div class="card-header border-b border-[#30363d] bg-[#161b22]/30 flex items-center justify-between">
+                <h3 class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-[#8b949e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Recent Activity
+                </h3>
+                <a href="/dashboard/<%= activeOrg.slug %>/requests" class="text-[10px] font-bold text-[#58a6ff] hover:underline uppercase tracking-widest">View All</a>
+            </div>
+            <div class="p-0">
+                <% if (!locals.latestRequests || latestRequests.length === 0) { %>
+                    <div class="p-8 text-center">
+                        <p class="text-[12px] text-[#484f58]">No recent requests</p>
+                    </div>
+                <% } else { %>
+                    <div class="divide-y divide-[#21262d]">
+                        <% latestRequests.forEach(r => { %>
+                            <div class="px-5 py-3.5 flex items-center justify-between hover:bg-[#1f6feb]/5 transition-colors group">
+                                <div class="flex items-center gap-3 truncate">
+                                    <span class="font-mono font-bold text-[9px] px-1.5 py-0.5 rounded border <%= r.method==='GET'?'text-[#3fb950] border-[#3fb950]/20 bg-[#3fb950]/5':r.method==='POST'?'text-[#58a6ff] border-[#58a6ff]/20 bg-[#58a6ff]/5':'text-[#e3b341] border-[#e3b341]/20 bg-[#e3b341]/5' %>">
+                                        <%= r.method %>
+                                    </span>
+                                    <span class="text-[12px] text-[#c9d1d9] truncate font-mono" title="<%= r.path %>"><%= r.path %></span>
+                                </div>
+                                <div class="flex items-center gap-3 shrink-0">
+                                    <span class="text-[11px] font-bold <%= r.status < 400 ? 'text-[#3fb950]' : 'text-[#f85149]' %>"><%= r.status %></span>
+                                    <span class="text-[10px] text-[#484f58] font-mono"><%= new Date(r.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) %></span>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header border-b border-[#30363d] bg-[#161b22]/30">
+                <h3>🔑 CLI Auth Token</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-[12px] text-[#8b949e] mb-4">Run once in your terminal to authenticate the Apout CLI. Never share this with anyone.</p>
+                <div class="flex items-center gap-3">
+                    <div class="flex-1 bg-black/40 border border-[#30363d] rounded-xl px-4 py-3 font-mono text-[12px] text-[#58a6ff] truncate">
+                        apout login <%= user.token %>
+                    </div>
+                    <button onclick="navigator.clipboard.writeText('apout login <%= user.token %>');this.innerHTML='<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>';setTimeout(()=>this.innerHTML='<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>',2000)" class="w-11 h-11 flex items-center justify-center border border-[#30363d] rounded-xl text-[#8b949e] hover:text-white transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Start -->
+    <div class="card bg-gradient-to-br from-[#161b22] to-transparent border-[#30363d]">
+        <div class="card-header border-b border-[#30363d]"><h3>🚀 Launch Checklist</h3></div>
+        <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <% [{n:1,label:'Install CLI',desc:'Run npm install -g ./ in the project root to get started.',color:'#ff7b72'},
+               {n:2,label:'Authenticate',desc:'Use apout login to link your account to your local environment.',color:'#e3b341'},
+               {n:3,label:'Start Tunnel',desc:'Relay local ports with apout start --port <n> to your subdomain.',color:'#3fb950'}].forEach(s=>{ %>
+            <div class="relative">
+                <div class="w-8 h-8 rounded-full border border-[#30363d] flex items-center justify-center text-[11px] font-black text-[#8b949e] mb-4"><%= s.n %></div>
+                <div class="text-[14px] font-bold text-white mb-1"><%= s.label %></div>
+                <p class="text-[12px] text-[#8b949e] leading-relaxed"><%= s.desc %></p>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+</div>
+<%- include('partials/end') %>

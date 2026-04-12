@@ -1,0 +1,156 @@
+<%- include('partials/sidebar', {pageTitle:'Subdomains', activeNav:'subdomains', activeOrg, orgs, user, tunnelCount}) %>
+
+<div class="p-8 max-w-5xl w-full">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Reserved Subdomains</h1>
+            <p class="text-[#8b949e] text-sm mt-1">Manage unique permanent addresses on the OutRay network.</p>
+        </div>
+        <button onclick="document.getElementById('sub-modal').classList.remove('hidden')" class="btn-primary" style="padding: 10px 20px;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Reserve New
+        </button>
+    </div>
+
+    <!-- Stats summary -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="card p-5 bg-[#161b22]/50">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider mb-2">Total Subdomains</div>
+                    <div class="text-2xl font-bold text-white"><%= subdomains.length %></div>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-[#1f6feb]/10 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-[#1f6feb]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="card p-5 bg-[#161b22]/50 border-blue-500/20">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider mb-2">Active Usage</div>
+                    <div class="text-2xl font-bold text-[#3fb950]"><%= tunnels.length %> Active</div>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-[#3fb950]/10 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-[#3fb950]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card border-[#30363d] overflow-hidden mb-8">
+        <div class="card-header border-b border-[#30363d] bg-[#161b22]/30">
+            <h3 class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#8b949e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                Your Inventory
+            </h3>
+        </div>
+
+        <% if (subdomains.length === 0) { %>
+            <div class="p-16 text-center">
+                <div class="w-16 h-16 bg-[#21262d] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-[#484f58]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                </div>
+                <h4 class="text-white font-semibold">No reserved subdomains</h4>
+                <p class="text-[#8b949e] text-sm mt-1 max-w-sm mx-auto">Reserve yours so you never lose your public development URL.</p>
+                <button onclick="document.getElementById('sub-modal').classList.remove('hidden')" class="btn-ghost mt-4 text-[#58a6ff]">Get started &rarr;</button>
+            </div>
+        <% } else { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-[11px] font-bold text-[#8b949e] uppercase tracking-wider border-b border-[#30363d]">
+                            <th class="px-6 py-4">URL</th>
+                            <th class="px-6 py-4">Reserved Date</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#30363d]">
+                        <% subdomains.forEach(s => { %>
+                            <tr class="hover:bg-[#161b22]/50 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-[#1f6feb] animate-pulse"></div>
+                                        <div class="font-mono text-sm text-[#58a6ff] font-bold"><%= s.name %>.OutRay.dev</div>
+                                        <button onclick="navigator.clipboard.writeText('<%= s.name %>.OutRay.dev');this.innerHTML='<svg class=\'w-3.5 h-3.5 text-[#3fb950]\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>';setTimeout(()=>this.innerHTML='<svg class=\'w-3.5 h-3.5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>',2000)" class="p-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[#8b949e] hover:text-white">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-[#8b949e] text-xs">
+                                    <%= new Date(s.created_at).toLocaleString() %>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <% const isActive = tunnels.some(t => t.subdomain === s.name); %>
+                                    <% if (isActive) { %>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#3fb950]/10 text-[#3fb950] border border-[#3fb950]/20">
+                                            Online
+                                        </span>
+                                    <% } else { %>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#8b949e]/10 text-[#8b949e] border border-[#8b949e]/20">
+                                            Idle
+                                        </span>
+                                    <% } %>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <form method="POST" action="subdomains/<%= s.id %>/delete" onsubmit="return confirm('Release this subdomain? Someone else can take it immediately.')">
+                                        <button class="text-[#f85149] hover:bg-[#f8514910] p-2 rounded-md transition-colors opacity-0 group-hover:opacity-100">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Info card -->
+    <div class="card p-6 bg-gradient-to-br from-[#161b22] to-[#0d1117] border-[#1f6feb]/30">
+        <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-[#1f6feb] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-1">Permanent URLs</h4>
+                <p class="text-[#8b949e] text-sm leading-relaxed">
+                    By reserving a subdomain, your tunnels will always be assigned that specific address when you specify it in the CLI. 
+                    This is perfect for webhooks, testing mobile apps, or sharing persistent links with teammates.
+                </p>
+                <div class="mt-4 flex gap-2">
+                    <code class="bg-black/40 text-[#79c0ff] px-3 py-1.5 rounded-md text-xs font-mono">OutRay start --port 3000 --subdomain myapp</code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="sub-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="card w-full max-w-sm shadow-2xl bg-[#0d1117] border-[#30363d]">
+        <div class="card-header border-b border-[#30363d] px-6 py-4 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-white">Reserve Subdomain</h3>
+            <button onclick="document.getElementById('sub-modal').classList.add('hidden')" class="text-[#8b949e] hover:text-white">&times;</button>
+        </div>
+        <form method="POST" action="subdomains" class="p-6 space-y-5">
+            <div>
+                <label class="block text-[11px] font-bold text-[#8b949e] uppercase mb-2">SUBDOMAIN NAME</label>
+                <div class="flex items-center gap-3">
+                    <input name="name" class="input py-3 px-4 text-white font-bold" placeholder="my-awesome-app" required pattern="[a-z0-9-]+" title="lowercase letters, numbers, and hyphens only">
+                    <span class="text-[#484f58] font-semibold">.OutRay.dev</span>
+                </div>
+                <p class="text-[10px] text-[#484f58] mt-3 uppercase font-bold tracking-widest">Reserved for this organization</p>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="btn-primary flex-1 justify-center py-3">Confirm Reservation</button>
+                <button type="button" onclick="document.getElementById('sub-modal').classList.add('hidden')" class="btn-ghost flex-1 justify-center py-3">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/end') %>
